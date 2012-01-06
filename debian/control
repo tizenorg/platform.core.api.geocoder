@@ -1,0 +1,22 @@
+
+Source: capi-location-geocoder
+Section: libs
+Priority: extra
+Maintainer: Kangho Hur <kangho.hur@samsung.com>
+Build-Depends: debhelper (>= 5), dlog-dev, libslp-location-dev, capi-base-common-dev
+
+Package: capi-location-geocoder
+Architecture: any
+Depends: ${shilbs:Depends}, ${misc:Depends}
+Description: A Geocoder library in Tizen Native API
+
+Package: capi-location-geocoder-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, capi-location-geocoder (= ${Source-Version}), dlog-dev, libslp-location-dev, capi-base-common-dev
+Description: A Geocoder library in Tizen Native API (DEV)
+
+Package: capi-location-geocoder-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, capi-location-geocoder (= ${Source-Version})
+Description: A Geocoder library in Tizen Native API (DBG)
+
