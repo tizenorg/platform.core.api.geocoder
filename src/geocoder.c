@@ -50,6 +50,7 @@ int _convert_error_code(int code, char* func_name)
 			msg = "GEOCODER_ERROR_NONE";
 			break;
 		case LOCATION_ERROR_NETWORK_FAILED:
+		case LOCATION_ERROR_NETWORK_NOT_CONNECTED:
 			ret = GEOCODER_ERROR_NETWORK_FAILED;
 			msg = "GEOCODER_ERROR_NETWORK_FAILED";
 			break;
@@ -91,27 +92,26 @@ static void cb_address_from_position (LocationError error, LocationAddress *addr
 	}
 }
 
-static void cb_position_from_address (LocationError error, LocationPosition *pos, LocationAccuracy *acc, gpointer userdata)
+static void cb_position_from_address (LocationError error, GList *position_list, GList *accuracy_list, gpointer userdata)
 {
 	geocoder_s * handle = (geocoder_s*)userdata;
 	if(handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS])
 	{
-		if(error != LOCATION_ERROR_NONE || pos == NULL)
+		if(error != LOCATION_ERROR_NONE || position_list == NULL || position_list->data ==NULL || accuracy_list==NULL )
 		{
 			_convert_error_code(error,(char*)__FUNCTION__);
 		}
 		else
 		{
-			int i;
-			int temp_max = 1;
-			for( i=0 ; i < temp_max ; i++)
+			while(position_list)
 			{
-				 LOGI("[%s] Position[%d] - time: %d, lat: %f, long: %f, alt: %f, status: %d", __FUNCTION__, (i+1), pos->timestamp, pos->latitude, pos->longitude, pos->altitude, pos->status);
+				LocationPosition *pos = position_list->data;
 				if ( ((geocoder_get_position_cb)handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS])(pos->latitude, pos->longitude, handle->user_data[_GEOCODER_CB_POSITION_FROM_ADDRESS]) != TRUE )
 				{
-					 LOGI("[%s] User quit the loop [count : %d]",  __FUNCTION__, (i+1));
+					 LOGI("[%s] User quit the loop ",  __FUNCTION__);
 					break;
 				}
+				position_list = g_list_next(position_list);
 			}
 		}
 	}
@@ -297,29 +297,32 @@ int	 geocoder_foreach_positions_from_address_sync(geocoder_h geocoder,const char
 	geocoder_s *handle = (geocoder_s*)geocoder;
 
 	int ret;
-	LocationPosition *pos = NULL;
-	LocationAccuracy *acc = NULL;
+	GList *pos_list = NULL;
+	GList *acc_list = NULL;
 	char* addr_str = g_strdup(address);
-			 
-	ret = location_get_position_from_freeformed_address(handle->object, addr_str, &pos, &acc);
+
+
+	ret = location_get_position_from_freeformed_address(handle->object, addr_str, &pos_list, &acc_list);
+
 	if( ret != LOCATION_ERROR_NONE)
 	{
 		g_free(addr_str);       
 		return _convert_error_code(ret,(char*)__FUNCTION__);
 	}
 		 
-	int i;
-	int temp_max = 1;
-	for( i=0 ; i < temp_max ; i++)
+	while(pos_list)
 	{
+		LocationPosition *pos = pos_list->data;
 		if ( callback(pos->latitude, pos->longitude, user_data) != TRUE )
 		{
-			 LOGI("[%s] User quit the loop [count : %d]",  __FUNCTION__, (i+1));
+			LOGI("[%s] User quit the loop ",  __FUNCTION__);
 			break;
 		}
+		pos_list = g_list_next(pos_list);
 	}
+
 	g_free(addr_str);
-	location_position_free(pos);
-	location_accuracy_free(acc);
+	g_list_free (pos_list);
+	g_list_free (acc_list);
 	return GEOCODER_ERROR_NONE;
 }

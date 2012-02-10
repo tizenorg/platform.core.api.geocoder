@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 
 	geocoder_test();
 	reverse_geocoder_test();
-	g_timeout_add_seconds(10, exit_program, NULL);
+	g_timeout_add_seconds(30, exit_program, NULL);
 	g_main_loop_run (loop);
 	
 	return 0;
