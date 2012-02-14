@@ -1,3 +1,9 @@
+capi-location-geocoder (0.1.0-8) unstable; urgency=low
+
+  * Apply the SOVERSION 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 14 Feb 2012 18:22:56 +0900
+
 capi-location-geocoder (0.1.0-7) unstable; urgency=low
 
   * Support to multiple geocoding result
