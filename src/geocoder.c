@@ -39,7 +39,7 @@
 * Internal Implementation
 */
 
-int _convert_error_code(int code, char* func_name)
+static int __convert_error_code(int code, char* func_name)
 {
 	int ret;
 	char* msg = "GEOCODER_ERROR_NONE";
@@ -70,14 +70,14 @@ int _convert_error_code(int code, char* func_name)
 	return ret;	
 }
 
-static void cb_address_from_position (LocationError error, LocationAddress *addr, LocationAccuracy *acc, gpointer userdata)
+static void __cb_address_from_position (LocationError error, LocationAddress *addr, LocationAccuracy *acc, gpointer userdata)
 {
 	geocoder_s * handle = (geocoder_s*)userdata;
 	if(handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION])
 	{
 		if(error != LOCATION_ERROR_NONE || addr == NULL)
 		{
-			_convert_error_code(error,(char*)__FUNCTION__);
+			__convert_error_code(error,(char*)__FUNCTION__);
 			((geocoder_get_address_cb)handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION])(NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, handle->user_data[_GEOCODER_CB_ADDRESS_FROM_POSITION]);			
 		}
 		else
@@ -92,14 +92,14 @@ static void cb_address_from_position (LocationError error, LocationAddress *addr
 	}
 }
 
-static void cb_position_from_address (LocationError error, GList *position_list, GList *accuracy_list, gpointer userdata)
+static void __cb_position_from_address (LocationError error, GList *position_list, GList *accuracy_list, gpointer userdata)
 {
 	geocoder_s * handle = (geocoder_s*)userdata;
 	if(handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS])
 	{
 		if(error != LOCATION_ERROR_NONE || position_list == NULL || position_list->data ==NULL || accuracy_list==NULL )
 		{
-			_convert_error_code(error,(char*)__FUNCTION__);
+			__convert_error_code(error,(char*)__FUNCTION__);
 		}
 		else
 		{
@@ -162,7 +162,7 @@ int	geocoder_destroy(geocoder_h geocoder)
 	int ret = location_free(handle->object);
 	if(ret!=GEOCODER_ERROR_NONE)
 	{
-		return _convert_error_code(ret,(char*)__FUNCTION__);
+		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
 	free(handle);
 	return GEOCODER_ERROR_NONE;
@@ -183,10 +183,10 @@ int	geocoder_get_address_from_position(geocoder_h geocoder, double latitude, dou
 	handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION] = callback;
 	handle->user_data[_GEOCODER_CB_ADDRESS_FROM_POSITION] = user_data;
 	
-	ret = location_get_address_from_position_async(handle->object, pos, cb_address_from_position, handle);
+	ret = location_get_address_from_position_async(handle->object, pos, __cb_address_from_position, handle);
 	if( ret != LOCATION_ERROR_NONE)
 	{
-		return _convert_error_code(ret,(char*)__FUNCTION__);
+		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
 	location_position_free(pos);
 	return GEOCODER_ERROR_NONE;
@@ -208,7 +208,7 @@ int geocoder_get_address_from_position_sync(geocoder_h geocoder, double latitude
 	ret = location_get_address_from_position(handle->object, pos, &addr, &acc);
 	if( ret != LOCATION_ERROR_NONE)
 	{
-		return _convert_error_code(ret,(char*)__FUNCTION__);
+		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
 
 	if(building_number)
@@ -280,11 +280,11 @@ int	 geocoder_foreach_positions_from_address(geocoder_h geocoder,const char* add
 	handle->user_data[_GEOCODER_CB_POSITION_FROM_ADDRESS] = user_data;
 
 	int ret;	
-	ret = location_get_position_from_freeformed_address_async(handle->object, addr_str,cb_position_from_address, handle);
+	ret = location_get_position_from_freeformed_address_async(handle->object, addr_str,__cb_position_from_address, handle);
 	if( ret != LOCATION_ERROR_NONE)
 	{
 		g_free(addr_str);       
-		return _convert_error_code(ret,(char*)__FUNCTION__);
+		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
 	return GEOCODER_ERROR_NONE;
 }
@@ -307,7 +307,7 @@ int	 geocoder_foreach_positions_from_address_sync(geocoder_h geocoder,const char
 	if( ret != LOCATION_ERROR_NONE)
 	{
 		g_free(addr_str);       
-		return _convert_error_code(ret,(char*)__FUNCTION__);
+		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
 		 
 	while(pos_list)
