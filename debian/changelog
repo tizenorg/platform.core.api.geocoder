@@ -1,3 +1,9 @@
+capi-location-geocoder (0.1.0-9) unstable; urgency=low
+
+  * Use 'static' to local function which is limited to the current source file. 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 21 Feb 2012 10:21:01 +0900
+
 capi-location-geocoder (0.1.0-8) unstable; urgency=low
 
   * Apply the SOVERSION 
