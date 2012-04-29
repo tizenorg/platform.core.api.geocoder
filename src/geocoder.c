@@ -39,6 +39,16 @@
 * Internal Implementation
 */
 
+typedef struct {
+	void *data;
+	geocoder_get_address_cb callback;
+}__addr_callback_data;
+
+typedef struct {
+	void *data;
+	geocoder_get_position_cb callback;
+}__pos_callback_data;
+
 static int __convert_error_code(int code, char* func_name)
 {
 	int ret;
@@ -58,6 +68,10 @@ static int __convert_error_code(int code, char* func_name)
 			ret = GEOCODER_ERROR_INVALID_PARAMETER;
 			msg = "GEOCODER_ERROR_INVALID_PARAMETER";
 			break;
+		case LOCATION_ERROR_NOT_FOUND:
+			ret = GEOCODER_ERROR_NOT_FOUND;
+			msg = "GEOCODER_ERROR_NOT_FOUND";
+			break;
 		case LOCATION_ERROR_NOT_ALLOWED:
 		case LOCATION_ERROR_NOT_AVAILABLE:
 		case LOCATION_ERROR_CONFIGURATION:
@@ -72,53 +86,52 @@ static int __convert_error_code(int code, char* func_name)
 
 static void __cb_address_from_position (LocationError error, LocationAddress *addr, LocationAccuracy *acc, gpointer userdata)
 {
-	geocoder_s * handle = (geocoder_s*)userdata;
-	if(handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION])
+	__addr_callback_data * callback = (__addr_callback_data*)userdata;
+	if( callback == NULL || callback->callback == NULL)
 	{
-		if(error != LOCATION_ERROR_NONE || addr == NULL)
-		{
-			__convert_error_code(error,(char*)__FUNCTION__);
-			((geocoder_get_address_cb)handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION])(NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, handle->user_data[_GEOCODER_CB_ADDRESS_FROM_POSITION]);			
-		}
-		else
-		{
-			 LOGI("[%s] Address - building number: %s, postal code: %s, street: %s, city: %s, district:  %s, state: %s, country code: %s", __FUNCTION__ , addr->building_number, addr->postal_code, addr->street, addr->city, addr->district, addr->state, addr->country_code);
-			((geocoder_get_address_cb)handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION])(addr->building_number, addr->postal_code, addr->street, addr->city, addr->district, addr->state, addr->country_code, handle->user_data[_GEOCODER_CB_ADDRESS_FROM_POSITION]);
-		}
+		LOGI("[%s] callback is NULL )",__FUNCTION__);
+		return ;
+	}
+
+	if(error != LOCATION_ERROR_NONE || addr == NULL)
+	{
+		callback->callback(__convert_error_code(error,(char*)__FUNCTION__), NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, callback->data);
 	}
 	else
 	{
-		LOGI("[%s] callback is NULL )",__FUNCTION__);
+		LOGI("[%s] Address - building number: %s, postal code: %s, street: %s, city: %s, district:  %s, state: %s, country code: %s", __FUNCTION__ , addr->building_number, addr->postal_code, addr->street, addr->city, addr->district, addr->state, addr->country_code);
+		callback->callback(GEOCODER_ERROR_NONE, addr->building_number, addr->postal_code, addr->street, addr->city, addr->district, addr->state, addr->country_code, callback->data);
 	}
+	free(callback);
 }
 
 static void __cb_position_from_address (LocationError error, GList *position_list, GList *accuracy_list, gpointer userdata)
 {
-	geocoder_s * handle = (geocoder_s*)userdata;
-	if(handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS])
+	__pos_callback_data * callback = (__pos_callback_data*)userdata;
+	if( callback == NULL || callback->callback == NULL)
 	{
-		if(error != LOCATION_ERROR_NONE || position_list == NULL || position_list->data ==NULL || accuracy_list==NULL )
-		{
-			__convert_error_code(error,(char*)__FUNCTION__);
-		}
-		else
-		{
-			while(position_list)
-			{
-				LocationPosition *pos = position_list->data;
-				if ( ((geocoder_get_position_cb)handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS])(pos->latitude, pos->longitude, handle->user_data[_GEOCODER_CB_POSITION_FROM_ADDRESS]) != TRUE )
-				{
-					 LOGI("[%s] User quit the loop ",  __FUNCTION__);
-					break;
-				}
-				position_list = g_list_next(position_list);
-			}
-		}
+		LOGI("[%s] callback is NULL )",__FUNCTION__);
+		return ;
+	}
+
+	if(error != LOCATION_ERROR_NONE || position_list == NULL || position_list->data ==NULL || accuracy_list==NULL )
+	{
+		callback->callback(__convert_error_code(error,(char*)__FUNCTION__), 0, 0, callback->data);
 	}
 	else
 	{
-		LOGI("[%s] callback is NULL )",__FUNCTION__);
+		while(position_list)
+		{
+			LocationPosition *pos = position_list->data;
+			if ( callback->callback(GEOCODER_ERROR_NONE, pos->latitude, pos->longitude, callback->data) != TRUE )
+			{
+				LOGI("[%s] User quit the loop ",  __FUNCTION__);
+				break;
+			}
+			position_list = g_list_next(position_list);
+		}
 	}
+	free(callback);
 }
 
 /*
@@ -180,93 +193,24 @@ int	geocoder_get_address_from_position(geocoder_h geocoder, double latitude, dou
 	LocationPosition *pos = NULL;
 	pos = location_position_new (0, latitude, longitude, 0, LOCATION_STATUS_2D_FIX);
 
-	handle->user_cb[_GEOCODER_CB_ADDRESS_FROM_POSITION] = callback;
-	handle->user_data[_GEOCODER_CB_ADDRESS_FROM_POSITION] = user_data;
+	__addr_callback_data * calldata = (__addr_callback_data *)malloc(sizeof(__addr_callback_data));
+	if( calldata == NULL)
+	{
+		LOGE("[%s] GEOCODER_ERROR_OUT_OF_MEMORY(0x%08x) : fail to create callback data", __FUNCTION__, GEOCODER_ERROR_OUT_OF_MEMORY);
+		return GEOCODER_ERROR_OUT_OF_MEMORY;
+	}
+	calldata->callback = callback;
+	calldata->data = user_data;
 	
-	ret = location_get_address_from_position_async(handle->object, pos, __cb_address_from_position, handle);
+	ret = location_get_address_from_position_async(handle->object, pos, __cb_address_from_position, calldata);
+	location_position_free(pos);
 	if( ret != LOCATION_ERROR_NONE)
 	{
+		free(calldata);
 		return __convert_error_code(ret,(char*)__FUNCTION__);
 	}
-	location_position_free(pos);
 	return GEOCODER_ERROR_NONE;
 }
-
-int geocoder_get_address_from_position_sync(geocoder_h geocoder, double latitude, double longitude, char **building_number, char **postal_code, char **street, char **city, char **district, char **state, char **country_code)
-{
-	GEOCODER_NULL_ARG_CHECK(geocoder);
-	GEOCODER_CHECK_CONDITION(latitude>=-90 && latitude<=90 ,GEOCODER_ERROR_INVALID_PARAMETER,"GEOCODER_ERROR_INVALID_PARAMETER");
-	GEOCODER_CHECK_CONDITION(longitude>=-180 && longitude<=180,GEOCODER_ERROR_INVALID_PARAMETER,"GEOCODER_ERROR_INVALID_PARAMETER");
-	
-	geocoder_s *handle = (geocoder_s*)geocoder;
-	int ret;
-	LocationAddress *addr = NULL;
-	LocationPosition *pos = NULL;
-	LocationAccuracy *acc = NULL;
-
-	pos = location_position_new (0, latitude, longitude, 0, LOCATION_STATUS_2D_FIX);
-	ret = location_get_address_from_position(handle->object, pos, &addr, &acc);
-	if( ret != LOCATION_ERROR_NONE)
-	{
-		return __convert_error_code(ret,(char*)__FUNCTION__);
-	}
-
-	if(building_number)
-	{
-		*building_number = NULL;
-		if(addr->building_number)
-			*building_number = strdup(addr->building_number);
-	}
-
-	if(postal_code)
-	{
-		*postal_code = NULL;
-		if(addr->postal_code)
-			*postal_code = strdup(addr->postal_code);
-	}
-
-	if(street)
-	{
-		*street = NULL;
-		if(addr->street)
-			*street = strdup(addr->street);
-	}
-
-	if(city)
-	{
-		*city = NULL;
-		if(addr->city)
-			*city = strdup(addr->city);
-	}
-
-	if(state)
-	{
-		*state = NULL;
-		if(addr->state)
-			*state = strdup(addr->state);
-	}
-
-	if(district)
-	{
-		*district = NULL;
-		if(addr->district)
-			*district = strdup(addr->district);
-	}
-
-	if(country_code)
-	{
-		*country_code = NULL;
-		if(addr->country_code)
-			*country_code = strdup(addr->country_code);
-	}
-	
-	location_address_free(addr);
-	location_position_free(pos);
-	location_accuracy_free(acc);
-	return GEOCODER_ERROR_NONE;
-}
-
-
 
 int	 geocoder_foreach_positions_from_address(geocoder_h geocoder,const char* address, geocoder_get_position_cb callback, void *user_data)
 {
@@ -276,53 +220,22 @@ int	 geocoder_foreach_positions_from_address(geocoder_h geocoder,const char* add
 	geocoder_s *handle = (geocoder_s*)geocoder;
 
 	char* addr_str = g_strdup(address);
-	handle->user_cb[_GEOCODER_CB_POSITION_FROM_ADDRESS] = callback;
-	handle->user_data[_GEOCODER_CB_POSITION_FROM_ADDRESS] = user_data;
+
+	__pos_callback_data * calldata = (__pos_callback_data *)malloc(sizeof(__pos_callback_data));
+	if( calldata == NULL)
+	{
+		LOGE("[%s] GEOCODER_ERROR_OUT_OF_MEMORY(0x%08x) : fail to create callback data", __FUNCTION__, GEOCODER_ERROR_OUT_OF_MEMORY);
+		return GEOCODER_ERROR_OUT_OF_MEMORY;
+	}
+	calldata->callback = callback;
+	calldata->data = user_data;
 
 	int ret;	
-	ret = location_get_position_from_freeformed_address_async(handle->object, addr_str,__cb_position_from_address, handle);
-	if( ret != LOCATION_ERROR_NONE)
-	{
-		g_free(addr_str);       
-		return __convert_error_code(ret,(char*)__FUNCTION__);
-	}
-	return GEOCODER_ERROR_NONE;
-}
-
-int	 geocoder_foreach_positions_from_address_sync(geocoder_h geocoder,const char* address, geocoder_get_position_cb callback, void *user_data)
-{
-	GEOCODER_NULL_ARG_CHECK(geocoder);
-	GEOCODER_NULL_ARG_CHECK(address);
-	GEOCODER_NULL_ARG_CHECK(callback);
-	geocoder_s *handle = (geocoder_s*)geocoder;
-
-	int ret;
-	GList *pos_list = NULL;
-	GList *acc_list = NULL;
-	char* addr_str = g_strdup(address);
-
-
-	ret = location_get_position_from_freeformed_address(handle->object, addr_str, &pos_list, &acc_list);
-
-	if( ret != LOCATION_ERROR_NONE)
-	{
-		g_free(addr_str);       
-		return __convert_error_code(ret,(char*)__FUNCTION__);
-	}
-		 
-	while(pos_list)
-	{
-		LocationPosition *pos = pos_list->data;
-		if ( callback(pos->latitude, pos->longitude, user_data) != TRUE )
-		{
-			LOGI("[%s] User quit the loop ",  __FUNCTION__);
-			break;
-		}
-		pos_list = g_list_next(pos_list);
-	}
-
+	ret = location_get_position_from_freeformed_address_async(handle->object, addr_str,__cb_position_from_address, calldata);
 	g_free(addr_str);
-	g_list_free (pos_list);
-	g_list_free (acc_list);
+	if( ret != LOCATION_ERROR_NONE)
+	{
+		return __convert_error_code(ret,(char*)__FUNCTION__);
+	}
 	return GEOCODER_ERROR_NONE;
 }

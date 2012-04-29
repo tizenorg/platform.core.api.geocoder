@@ -22,7 +22,12 @@
 
 geocoder_h geocoder;
 
-static bool  get_pos_cb(double latitude, double longitude, void *user_data)
+static void  get_addr_cb(geocoder_error_e result, const char *building_number, const char *postal_code, const char *street, const  char *city, const char *district, const char *state, const char *country_code, void *user_data)
+{
+		printf("get_addr_cb() ===> building number: %s, postal code: %s, street: %s, city: %s, district:  %s, state: %s, country code: %s\n", building_number,postal_code,street,city,district,state,country_code);
+}
+
+static bool  get_pos_cb(geocoder_error_e result, double latitude, double longitude, void *user_data)
 {
 		printf ("get_pos_cb() ===> latitude  : %g, longitude : %g\n",latitude, longitude);
 		return true;
@@ -40,29 +45,10 @@ int geocoder_test()
 		}
 	}
 
-	char *building_number;
-	char *postal_code;
-	char *street;
-	char *city;
-	char *district;
-	char *state;
-	char *country_code;
-
-	ret = geocoder_get_address_from_position_sync(geocoder,37.258,127.056,&building_number,&postal_code,&street,&city,&district,&state,&country_code);
+	ret = geocoder_get_address_from_position(geocoder,37.258,127.056,get_addr_cb, NULL);
 	if(ret != GEOCODER_ERROR_NONE)
 	{
-		printf ("geocoder_get_address_from_position_sync return error : %d\n", ret);
-	}
-	else
-	{
-		printf("building number: %s, postal code: %s, street: %s, city: %s, district:  %s, state: %s, country code: %s\n", building_number,postal_code,street,city,district,state,country_code);
-		free(building_number);
-		free(postal_code);
-		free(street);
-		free(city);
-		free(district);
-		free(state);
-		free(country_code);
+		printf ("geocoder_get_address_from_position return error : %d\n", ret);
 	}
 	return 1;
 }
@@ -80,14 +66,10 @@ int reverse_geocoder_test()
 	}
 	char *address="suwon";
 
-	ret = geocoder_foreach_positions_from_address_sync   (geocoder,address, get_pos_cb, (void*)geocoder);
+	ret = geocoder_foreach_positions_from_address (geocoder,address, get_pos_cb, (void*)geocoder);
 	if(ret != GEOCODER_ERROR_NONE)
 	{
 		printf ("geocoder_foreach_positions_from_address_sync return error : %d\n", ret);
-	}
-	else
-	{
-		printf ("geocoder_foreach_positions_from_address_sync return OK : %d\n", ret);
 	}
 	return 1;
 }

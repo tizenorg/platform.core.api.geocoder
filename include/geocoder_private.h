@@ -33,8 +33,6 @@ typedef enum {
 
 typedef struct _geocoder_s{
 	LocationObject* object;
-	const void* user_cb[_GEOCODER_CB_TYPE_NUM];
-	void* user_data[_GEOCODER_CB_TYPE_NUM];
 } geocoder_s;
 
 #ifdef __cplusplus

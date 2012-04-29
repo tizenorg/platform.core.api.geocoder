@@ -44,27 +44,29 @@ typedef enum
     GEOCODER_ERROR_NONE = TIZEN_ERROR_NONE,				/**< Successful */
     GEOCODER_ERROR_OUT_OF_MEMORY = TIZEN_ERROR_OUT_OF_MEMORY,		/**< Out of memory */
     GEOCODER_ERROR_INVALID_PARAMETER = TIZEN_ERROR_INVALID_PARAMETER,			/**< Invalid parameter */
+    GEOCODER_ERROR_TIMED_OUT = TIZEN_ERROR_TIMED_OUT,  /**< Timeout error, no answer */
     GEOCODER_ERROR_NETWORK_FAILED = TIZEN_ERROR_LOCATION_CLASS | 0x02,			/**< Network unavailable*/
     GEOCODER_ERROR_SERVICE_NOT_AVAILABLE = TIZEN_ERROR_LOCATION_CLASS | 0x03,	/**< Service unavailable */
-    GEOCODER_ERROR_TIMED_OUT = TIZEN_ERROR_TIMED_OUT,  /**< Timeout error, no answer */
+    GEOCODER_ERROR_NOT_FOUND = TIZEN_ERROR_LOCATION_CLASS | 0x04,	/**< Result not found */
 } geocoder_error_e;
 
 /**
  * @brief	Called once for each position information converted from the given address information.
+ * @param[in] result The result of request
  * @param[in] latitude The latitude [-90.0 ~ 90.0] (degrees)
  * @param[in] longitude The longitude [-180.0 ~ 180.0] (degrees)
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
- * @pre Either geocoder_foreach_positions_from_address() or geocoder_foreach_positions_from_address_sync() will invoke this callback.
+ * @pre geocoder_foreach_positions_from_address() will invoke this callback.
  * @see geocoder_foreach_positions_from_address()
- * @see geocoder_foreach_positions_from_address_sync()
  */
-typedef bool(*geocoder_get_position_cb)(double latitude, double longitude, void *user_data);
+typedef bool(*geocoder_get_position_cb)(geocoder_error_e result, double latitude, double longitude, void *user_data);
 
 
 /**
  * @brief   Called when the address information has converted from position information.
  * @remarks You should not free all string values.
+ * @param[in] result The result of request
  * @param[in] building_number	 The building number
  * @param[in] postal_code	The postal delivery code
  * @param[in] street	The full street name
@@ -76,7 +78,7 @@ typedef bool(*geocoder_get_position_cb)(double latitude, double longitude, void 
  * @pre geocoder_get_address_from_position() will invoke this callback.
  * @see	geocoder_get_address_from_position()
  */
-typedef void (*geocoder_get_address_cb)(const char *building_number, const char *postal_code, const char *street, const  char *city, const char *district, const char *state, const char *country_code, void *user_data);
+typedef void (*geocoder_get_address_cb)(geocoder_error_e result, const char *building_number, const char *postal_code, const char *street, const  char *city, const char *district, const char *state, const char *country_code, void *user_data);
 
 /**
  * @brief Creates a new geocoder handle.
@@ -92,7 +94,6 @@ typedef void (*geocoder_get_address_cb)(const char *building_number, const char 
  * @see	geocoder_destroy()
  */
 int geocoder_create(geocoder_h *geocoder);
-
 
 /**
  * @brief	Destroys the geocoder handle and releases all its resources.
@@ -119,37 +120,9 @@ int geocoder_destroy(geocoder_h geocoder);
  * @retval #GEOCODER_ERROR_SERVICE_NOT_AVAILABLE Service not available
  * @post This function invokes geocoder_get_address_cb().
  * @see	geocoder_get_address_cb()
- * @see geocoder_get_address_from_position_sync()
  * @see geocoder_foreach_positions_from_address()
- * @see geocoder_foreach_positions_from_address_sync()
  */
 int geocoder_get_address_from_position(geocoder_h geocoder, double latitude, double longitude, geocoder_get_address_cb callback, void *user_data);
-
-/**
- * @brief Gets the address for a given position.
- * @details The function tries to get the data immediately. If the attempt is unsuccessful, a corresponding error code is returned.
- * @remarks This function requires network access. \n All output values must be released with @c free() by you.
- * @param[in] geocoder The geocoder handle
- * @param[in] latitude The latitude [-90.0 ~ 90.0] (degrees)
- * @param[in] longitude The longitude [-180.0 ~ 180.0] (degrees)
- * @param[out] building_number	 The building number
- * @param[out] postal_code	The postal delivery code
- * @param[out] street	The full street name
- * @param[out] city	The city name
- * @param[out] district	The municipal district name
- * @param[out] state	The state or province region of a nation
- * @param[out] country_code	The country code
- * @return 0 on success, otherwise a negative error value.
- * @retval #GEOCODER_ERROR_NONE Successful
- * @retval #GEOCODER_ERROR_INVALID_PARAMETER	Invalid parameter
- * @retval #GEOCODER_ERROR_NETWORK_FAILED	Network connection failed
- * @retval #GEOCODER_ERROR_SERVICE_NOT_AVAILABLE Service not available
- * @see geocoder_get_address_from_position()
- * @see geocoder_foreach_positions_from_address()
- * @see geocoder_foreach_positions_from_address_sync()
- */
-int geocoder_get_address_from_position_sync(geocoder_h geocoder, double latitude, double longitude, char **building_number, char **postal_code, char **street, char **city, char **district, char **state, char **country_code);
-
 
 /**
  * @brief Gets the positions for a given address, asynchronously.
@@ -166,34 +139,9 @@ int geocoder_get_address_from_position_sync(geocoder_h geocoder, double latitude
  * @retval #GEOCODER_ERROR_SERVICE_NOT_AVAILABLE Service not available
  * @post It invokes geocoder_get_position_cb() to get changes in position.
  * @see	geocoder_get_position_cb()
- * @see geocoder_foreach_positions_from_address_sync()
  * @see geocoder_get_address_from_position()
- * @see geocoder_get_address_from_position_sync()
  */
 int geocoder_foreach_positions_from_address(geocoder_h geocoder, const char *address, geocoder_get_position_cb callback, void *user_data);
-
-
-/**
- * @brief Gets the positions for a given address.
- * @details This function gets the position for a given free-formed address string.
- * @remarks This function requires network access.
- * @param[in] geocoder The geocoder handle
- * @param[in] address   The free-formed address
- * @param[in] callback	The geocoder get positions callback function
- * @param[in] user_data The user data to be passed to the callback function
- * @return 0 on success, otherwise a negative error value.
- * @retval #GEOCODER_ERROR_NONE Successful
- * @retval #GEOCODER_ERROR_INVALID_PARAMETER	Invalid parameter
- * @retval #GEOCODER_ERROR_NETWORK_FAILED	Network connection failed
- * @retval #GEOCODER_ERROR_SERVICE_NOT_AVAILABLE Service not available
- * @retval #GEOCODER_ERROR_TIMED_OUT Timed out
- * @post It invokes geocoder_get_position_cb() to get changes in position.
- * @see	geocoder_get_position_cb()
- * @see geocoder_foreach_positions_from_address()
- * @see geocoder_get_address_from_position()
- * @see geocoder_get_address_from_position_sync()
- */
-int geocoder_foreach_positions_from_address_sync(geocoder_h geocoder, const char *address, geocoder_get_position_cb callback, void *user_data);
 
 /**
  * @}

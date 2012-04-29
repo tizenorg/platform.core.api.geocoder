@@ -1,3 +1,21 @@
+capi-location-geocoder (0.1.0-14) unstable; urgency=low
+
+  * Add the not found error code
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 04 Apr 2012 13:26:23 +0900
+
+capi-location-geocoder (0.1.0-12) unstable; urgency=low
+
+  * Fix the callback issue
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 28 Mar 2012 18:39:58 +0900
+
+capi-location-geocoder (0.1.0-11) unstable; urgency=low
+
+  * Add the result code for request(geocode/reverse geocode). Remove the sync function.
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Mon, 26 Mar 2012 21:45:09 +0900
+
 capi-location-geocoder (0.1.0-9) unstable; urgency=low
 
   * Use 'static' to local function which is limited to the current source file. 
