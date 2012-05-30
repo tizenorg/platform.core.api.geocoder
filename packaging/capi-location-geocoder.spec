@@ -5,6 +5,7 @@ Release:    14
 Group:      TO_BE/FILLED_IN
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1001: packaging/capi-location-geocoder.manifest 
 BuildRequires:  cmake
 BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(location)
@@ -29,6 +30,7 @@ Requires: %{name} = %{version}-%{release}
 
 
 %build
+cp %{SOURCE1001} .
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
 cmake . -DCMAKE_INSTALL_PREFIX=/usr -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
 
@@ -45,8 +47,10 @@ rm -rf %{buildroot}
 
 
 %files
+%manifest capi-location-geocoder.manifest
 %{_libdir}/libcapi-location-geocoder.so*
 
 %files devel
+%manifest capi-location-geocoder.manifest
 %{_includedir}/location/geocoder.h
 %{_libdir}/pkgconfig/*.pc
