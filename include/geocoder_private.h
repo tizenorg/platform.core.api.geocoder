@@ -18,6 +18,7 @@
 #define	__TIZEN_LOCATION_GEOCODER_PRIVATE_H__
 
 #include <location/location.h>
+#include <location/location-map-service.h>
 #include <geocoder.h>
 
 #ifdef __cplusplus
@@ -32,7 +33,7 @@ typedef enum {
 }_geocoder_cb_e;
 
 typedef struct _geocoder_s{
-	LocationObject* object;
+	LocationMapObject* object;
 } geocoder_s;
 
 #ifdef __cplusplus

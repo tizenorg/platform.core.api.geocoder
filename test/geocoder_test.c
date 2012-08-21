@@ -88,7 +88,7 @@ static gboolean exit_program (gpointer data)
 int main(int argc, char ** argv)
 {
 	loop =g_main_loop_new (NULL, TRUE);
-	g_setenv("PKG_NAME", "com.samsung.capi-location-geocoder-test", 1);
+	g_setenv("PKG_NAME", "org.tizen.capi-location-geocoder-test", 1);
 
 	geocoder_test();
 	reverse_geocoder_test();

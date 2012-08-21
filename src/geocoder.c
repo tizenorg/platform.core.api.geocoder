@@ -155,11 +155,11 @@ int	geocoder_create(geocoder_h* geocoder)
 
 	memset(handle, 0 , sizeof(geocoder_s));
 	
-	handle->object = location_new(LOCATION_METHOD_HYBRID);
+	handle->object = location_map_new(NULL);
 	if(handle->object  == NULL)
 	{
 		free(handle);
-		LOGE("[%s] GEOCODER_ERROR_SERVICE_NOT_AVAILABLE(0x%08x) : fail to location_new", __FUNCTION__, GEOCODER_ERROR_SERVICE_NOT_AVAILABLE);
+		LOGE("[%s] GEOCODER_ERROR_SERVICE_NOT_AVAILABLE(0x%08x) : fail to location_map_new", __FUNCTION__, GEOCODER_ERROR_SERVICE_NOT_AVAILABLE);
 		return GEOCODER_ERROR_SERVICE_NOT_AVAILABLE;
 	}
 
@@ -172,7 +172,7 @@ int	geocoder_destroy(geocoder_h geocoder)
 	GEOCODER_NULL_ARG_CHECK(geocoder);
 	geocoder_s *handle = (geocoder_s*)geocoder;
 
-	int ret = location_free(handle->object);
+	int ret = location_map_free(handle->object);
 	if(ret!=GEOCODER_ERROR_NONE)
 	{
 		return __convert_error_code(ret,(char*)__FUNCTION__);
@@ -202,7 +202,7 @@ int	geocoder_get_address_from_position(geocoder_h geocoder, double latitude, dou
 	calldata->callback = callback;
 	calldata->data = user_data;
 	
-	ret = location_get_address_from_position_async(handle->object, pos, __cb_address_from_position, calldata);
+	ret = location_map_get_address_from_position_async(handle->object, pos, __cb_address_from_position, calldata);
 	location_position_free(pos);
 	if( ret != LOCATION_ERROR_NONE)
 	{
@@ -231,7 +231,7 @@ int	 geocoder_foreach_positions_from_address(geocoder_h geocoder,const char* add
 	calldata->data = user_data;
 
 	int ret;	
-	ret = location_get_position_from_freeformed_address_async(handle->object, addr_str,__cb_position_from_address, calldata);
+	ret = location_map_get_position_from_freeformed_address_async(handle->object, addr_str,__cb_position_from_address, calldata);
 	g_free(addr_str);
 	if( ret != LOCATION_ERROR_NONE)
 	{

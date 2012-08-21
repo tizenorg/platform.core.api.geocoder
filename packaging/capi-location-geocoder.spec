@@ -1,3 +1,4 @@
+#sbs-git:slp/api/geocoder capi-location-geocoder 0.1.0 3888c8ac0e5ed129802b25ccb9d272a00546f976
 Name:       capi-location-geocoder
 Summary:    A Geocoder library in Tizen Native API
 Version: 0.1.0

@@ -1,41 +1,132 @@
+capi-location-geocoder (0.1.0-16) unstable; urgency=low
+
+  * Seperate map service from location service
+  * Tag: capi-location-geocoder_0.1.0-16
+
+ -- Minjune Kim <sena06.kim@samsung.com>  Fri, 27 Jul 2012 20:10:01 +0900
+
+capi-location-geocoder (0.1.0-15) unstable; urgency=low
+
+  * Fix the missing statement(break)
+  * Tag: capi-location-geocoder_0.1.0-15
+
+ -- Minjune Kim <sena06.kim@samsung.com>  Thu, 19 Jul 2012 19:45:11 +0900
+
 capi-location-geocoder (0.1.0-14) unstable; urgency=low
 
-  * Add the not found error code
+  * Fix the missing statement(break)
+  * Tag: capi-location-geocoder_0.1.0-14
 
- -- Kangho Hur <kangho.hur@samsung.com>  Wed, 04 Apr 2012 13:26:23 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 04 Apr 2012 14:35:13 +0900
+
+capi-location-geocoder (0.1.0-13) unstable; urgency=low
+
+  * Add the not found error code
+  * Tag: capi-location-geocoder_0.1.0-13 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 04 Apr 2012 13:06:40 +0900
 
 capi-location-geocoder (0.1.0-12) unstable; urgency=low
 
-  * Fix the callback issue
+  * Fix callback issue
+  * Tag: capi-location-geocoder_0.1.0-12 
 
- -- Kangho Hur <kangho.hur@samsung.com>  Wed, 28 Mar 2012 18:39:58 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 28 Mar 2012 18:11:01 +0900
 
 capi-location-geocoder (0.1.0-11) unstable; urgency=low
 
   * Add the result code for request(geocode/reverse geocode). Remove the sync function.
+  * Tag: capi-location-geocoder_0.1.0-11
 
- -- Kangho Hur <kangho.hur@samsung.com>  Mon, 26 Mar 2012 21:45:09 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Mon, 26 Mar 2012 21:13:22 +0900
+
+capi-location-geocoder (0.1.0-10) unstable; urgency=low
+
+  * Fix the failed cases on TC
+  * Tag: capi-location-geocoder_0.1.0-10
+
+ -- Minjune Kim <sena06.kim@samsung.com>  Tue, 20 Mar 2012 21:31:38 +0900
 
 capi-location-geocoder (0.1.0-9) unstable; urgency=low
 
-  * Use 'static' to local function which is limited to the current source file. 
+  * Use 'static' to local function which is limited to the current source file.
+  * Tag: capi-location-geocoder_0.1.0-9 
 
- -- Kangho Hur <kangho.hur@samsung.com>  Tue, 21 Feb 2012 10:21:01 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 21 Feb 2012 10:12:33 +0900
 
 capi-location-geocoder (0.1.0-8) unstable; urgency=low
 
-  * Apply the SOVERSION 
+  * Apply the SOVERSION
+  * Tag: capi-location-geocoder_0.1.0-8
 
- -- Kangho Hur <kangho.hur@samsung.com>  Tue, 14 Feb 2012 18:22:56 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 14 Feb 2012 17:55:34 +0900
 
 capi-location-geocoder (0.1.0-7) unstable; urgency=low
 
   * Support to multiple geocoding result
+  * Tag: capi-location-geocoder_0.1.0-7
 
- -- Kangho Hur <kangho.hur@samsung.com>  Fri, 10 Feb 2012 15:36:17 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Thu, 09 Feb 2012 21:16:23 +0900
+
+capi-location-geocoder (0.1.0-6) unstable; urgency=low
+
+  * support to the LOCATION_ERROR_NETWORK_NOT_CONNECTED
+  * Tag: capi-location-geocoder_0.1.0-6
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Thu, 26 Jan 2012 20:21:43 +0900
 
 capi-location-geocoder (0.1.0-5) unstable; urgency=low
 
-  * Initial release.
+  * Changes the value of ERROR_NONE
+  * Tag: capi-location-geocoder_0.1.0-5 
 
- -- Kangho Hur <kangho.hur@samsung.com>  Wed, 07 Dec 2011 12:48:38 +0900
+ -- Kangho Hur <kangho.hur@samsung.com>  Mon, 05 Dec 2011 11:20:49 +0900
+
+capi-location-geocoder (0.1.0-4) unstable; urgency=low
+
+  * Apply the Tizen
+  * Tag: capi-location-geocoder_0.1.0-4
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Wed, 23 Nov 2011 15:22:07 +0900
+
+capi-location-geocoder (0.1.0-3) unstable; urgency=low
+
+  * Repackage for SDK
+  * Tag: capi-location-geocoder_0.1.0-3
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Mon, 07 Nov 2011 21:47:01 +0900
+
+capi-location-geocoder (0.1.0-2) unstable; urgency=low
+
+  * Apply the error messages
+  * Tag: capi-location-geocoder_0.1.0-2 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Fri, 07 Oct 2011 16:48:32 +0900
+
+capi-location-geocoder (0.1.0-1) unstable; urgency=low
+
+  * Alpha Release
+  * Tag: capi-location-geocoder_0.1.0-1 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 27 Sep 2011 20:05:15 +0900
+
+capi-location-geocoder (0.0.1-3) unstable; urgency=low
+
+  * Change address parameter order
+  * Tag: capi-location-geocoder_0.0.1-3
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Tue, 20 Sep 2011 14:51:08 +0900
+
+capi-location-geocoder (0.0.1-2) unstable; urgency=low
+
+  * Update API Description
+  * Tag: capi-location-geocoder_0.0.1-2 
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Mon, 19 Sep 2011 17:26:44 +0900
+
+capi-location-geocoder (0.0.1-1) unstable; urgency=low
+
+  * Initial Upload
+  * Tag: capi-location-geocoder_0.0.1-1
+
+ -- Kangho Hur <kangho.hur@samsung.com>  Thu, 04 Aug 2011 17:06:44 +0900
