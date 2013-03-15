@@ -1,6 +1,6 @@
 Name:       capi-location-geocoder
 Summary:    A Geocoder library in Tizen Native API
-Version:    0.1.2
+Version:    0.1.1
 Release:    1
 Group:      System/Libraries
 License:    Apache License, Version 2.0
