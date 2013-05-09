@@ -1,6 +1,6 @@
 Name:       capi-location-geocoder
 Summary:    A Geocoder library in Tizen Native API
-Version:    0.1.1
+Version:    0.1.2
 Release:    1
 Group:      System/Libraries
 License:    Apache License, Version 2.0
@@ -30,7 +30,7 @@ Requires: %{name} = %{version}-%{release}
 
 %build
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
-cmake . -DCMAKE_INSTALL_PREFIX=/usr -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
+%cmake . -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
 
 
 make %{?jobs:-j%jobs}

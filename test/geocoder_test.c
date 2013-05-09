@@ -1,24 +1,24 @@
 /*
-* Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License. 
-*/
+ * Copyright (c) 2011-2013 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#include <geocoder.h>	
+#include <geocoder.h>
 
 geocoder_h geocoder;
 
@@ -36,13 +36,12 @@ static bool  get_pos_cb(geocoder_error_e result, double latitude, double longitu
 int geocoder_test()
 {
 	int ret;
-	if (geocoder ==NULL)
+	geocoder_preference_h pref;
+	int maxcnt;
+	ret = geocoder_create(&geocoder);
+	if (ret != GEOCODER_ERROR_NONE || geocoder == NULL)
 	{
-		ret = geocoder_create(&geocoder);
-		if(ret != GEOCODER_ERROR_NONE)
-		{
-			printf ("geocoder_create return error : %d=n", ret);
-		}
+		printf ("geocoder_create return error : %d\n", ret);
 	}
 
 	ret = geocoder_get_address_from_position(geocoder,37.258,127.056,get_addr_cb, NULL);
@@ -50,6 +49,12 @@ int geocoder_test()
 	{
 		printf ("geocoder_get_address_from_position return error : %d\n", ret);
 	}
+	geocoder_preference_create(&pref);
+	geocoder_preference_set_max_result(pref, 3);
+	geocoder_preference_get_max_result(pref, &maxcnt);
+	printf ("max cnt value set %d \n",maxcnt);
+	geocoder_service_set_preference(geocoder, pref);
+	geocoder_preference_destroy(pref);
 	return 1;
 }
 

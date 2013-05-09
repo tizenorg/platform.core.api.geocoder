@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2011-2013 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #ifndef __TIZEN_LOCATION_GEOCODER_PRIVATE_H__
 #define	__TIZEN_LOCATION_GEOCODER_PRIVATE_H__
@@ -47,6 +47,12 @@
 #define GEOCODER_NULL_ARG_CHECK(arg)	\
 	GEOCODER_CHECK_CONDITION(arg != NULL,GEOCODER_ERROR_INVALID_PARAMETER,"GEOCODER_ERROR_INVALID_PARAMETER")
 
+#define GEOCODER_PRINT_ERROR_CODE_RETURN(code) \
+	do{ \
+		GEOCODER_LOGE("%s(0x%08x)", #code, code); \
+		return code;	\
+	} while (0)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -60,7 +66,12 @@ typedef enum {
 
 typedef struct _geocoder_s{
 	LocationMapObject* object;
+	geocoder_preference_h preference;
 } geocoder_s;
+
+typedef struct _geocoder_preference_s{
+	LocationGeocodePreference *pref;
+} geocoder_preference_s;
 
 #ifdef __cplusplus
 }
