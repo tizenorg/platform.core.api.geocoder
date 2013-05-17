@@ -1,20 +1,17 @@
-#sbs-git:slp/api/geocoder capi-location-geocoder 0.1.0 3888c8ac0e5ed129802b25ccb9d272a00546f976
 Name:       capi-location-geocoder
 Summary:    A Geocoder library in Tizen Native API
 Version: 0.1.0
 Release:    14
-Group:      TO_BE/FILLED_IN
+Group:      API/C API
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 BuildRequires:  cmake
 BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(location)
 BuildRequires:  pkgconfig(capi-base-common)
-Requires(post): /sbin/ldconfig  
-Requires(postun): /sbin/ldconfig
 
 %description
-
+A Geocoder library in Tizen Native API
 
 %package devel
 Summary:  A Geocoder library in Tizen Native API (Development)
@@ -22,6 +19,8 @@ Group:    TO_BE/FILLED_IN
 Requires: %{name} = %{version}-%{release}
 
 %description devel
+A Geocoder library in Tizen Native API. 
+Development Files
 
 
 
@@ -31,13 +30,12 @@ Requires: %{name} = %{version}-%{release}
 
 %build
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
-cmake . -DCMAKE_INSTALL_PREFIX=/usr -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
+%cmake .  -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
 
 
 make %{?jobs:-j%jobs}
 
 %install
-rm -rf %{buildroot}
 %make_install
 
 %post -p /sbin/ldconfig
