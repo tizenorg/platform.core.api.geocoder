@@ -1,3 +1,6 @@
+* Tue May 28 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.103436@0eb8a0c
+- fixed wrong variable
+
 * Fri May 17 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130517.044638@b268796
 - fixed 64bit build
 

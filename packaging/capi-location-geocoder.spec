@@ -42,8 +42,8 @@ make %{?jobs:-j%jobs}
 
 %files
 %license LICENSE
-%manifest capi-location-geocoder.manifest
 %{_libdir}/libcapi-location-geocoder.so*
+%manifest capi-location-geocoder.manifest
 
 %files devel
 %{_includedir}/location/geocoder.h
