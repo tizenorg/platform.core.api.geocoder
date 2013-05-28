@@ -1,0 +1,8 @@
+Change-Id: I68fd06e7e470037103973c5fea25baed26c54d1f
+Code-Review+2: Anas Nashif
+Verified+1: Anas Nashif
+Submitted-by: Anas Nashif
+Submitted-at: Tue, 28 May 2013 07:28:15 -0700
+Reviewed-on: https://review.tizen.org/gerrit/3702
+Project: platform/core/api/geocoder
+Branch: refs/heads/tizen
