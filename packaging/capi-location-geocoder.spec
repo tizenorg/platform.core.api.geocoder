@@ -5,6 +5,7 @@ Release:    1
 Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1001: 	capi-location-geocoder.manifest
 BuildRequires:  cmake
 BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(location)
@@ -25,6 +26,7 @@ A Geocoder library in Tizen Native API (Development).
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 
 %build
@@ -41,10 +43,12 @@ make %{?jobs:-j%jobs}
 
 
 %files
+%manifest %{name}.manifest
 %license LICENSE
 %{_libdir}/libcapi-location-geocoder.so*
 %manifest capi-location-geocoder.manifest
 
 %files devel
+%manifest %{name}.manifest
 %{_includedir}/location/geocoder.h
 %{_libdir}/pkgconfig/*.pc
